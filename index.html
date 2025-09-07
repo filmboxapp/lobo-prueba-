@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garfield: La película</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+    }
+
+    /* 🔺 Reproductor superior */
+    .header {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background: #111;
+      border-bottom: 3px solid #e50914; /* Rojo */
+    }
+
+    .header iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Contenido principal */
+    .content {
+      display: flex;
+      align-items: flex-start;
+      padding: 15px;
+      gap: 15px;
+    }
+
+    .poster img {
+      width: 120px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+
+    .details {
+      flex: 1;
+    }
+
+    .details h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .meta {
+      color: #bbb;
+      font-size: 14px;
+      margin: 6px 0;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 16px;
+      color: #ffcc00; /* Amarillo estrellas */
+      margin: 6px 0;
+    }
+
+    .genres {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    /* Botón único */
+    .actions {
+      display: flex;
+      justify-content: center;
+      padding: 10px 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn.red {
+      background: #e50914;
+      color: #fff;
+    }
+
+    .btn.red:hover {
+      background: #b00710;
+    }
+
+    /* Sinopsis */
+    .synopsis {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px;
+    }
+
+    .synopsis h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #e50914;
+    }
+
+    .synopsis p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #ddd;
+    }
+
+    /* 🔹 Ajuste de reproductor según orientación */
+    @media (orientation: landscape) {
+      .header iframe {
+        width: 100%;
+        height: 100vh; /* ocupa toda la altura de la pantalla en horizontal */
+      }
+    }
+
+    @media (orientation: portrait) {
+      .header iframe {
+        width: 100%;
+        height: 200px; /* mantiene tamaño original en vertical */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔺 Reproductor superior -->
+  <div class="header">
+    <iframe src="https://lzplayerfree.blogspot.com/?url=U2FsdGVkX1%2BWKjazZcVI9Qv9yNvSqtPsLC%2BX2YT49U8T1nI1cY0xh8MlmshtXHmQHYnMr5pkiIOvQe68T88phFDLvhqDxTKP18XDjGaANfZGWQhLFtLGrlFtQrstSMEv" allowfullscreen></iframe>
+  </div>
+
+  <!-- Contenido -->
+  <div class="content">
+    <div class="poster">
+      <img src="https://image.tmdb.org/t/p/original/tkdc73JiPVvzngSpbLEIfFNjll1.jpg" alt="Garfield La película">
+    </div>
+    <div class="details">
+      <h2>Garfield: La película</h2>
+      <p class="meta">2024· 1h 40 min</p>
+      <p class="rating">
+        <!-- Estrellas SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        7.0
+      </p>
+      <p class="genres">Animación, Comedia</p>
+    </div>
+  </div>
+
+  <!-- Botón único -->
+  <div class="actions">
+    <button class="btn red">⬇ Descargar</button>
+  </div>
+
+  <!-- Sinopsis -->
+  <div class="synopsis">
+    <h3>Sinopsis</h3>
+    <p>
+      El mundialmente famoso Garfield, el gato casero que odia los lunes y que 
+      adora la lasaña, está a punto de vivir una aventura ¡en el salvaje mundo exterior! 
+      Tras una inesperada reunión con su largamente perdido padre, el desaliñado gato...
+    </p>
+  </div>
+
+</body>
+</html>
