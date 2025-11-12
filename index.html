@@ -1,142 +1,73 @@
-    .genres {
-      font-size: 14px;
-      color: #ccc;
-    }
-
-    /* Single button */
-    .actions {
-      display: flex;
-      justify-content: center;
-      padding: 10px 15px;
-    }
-
-    .btn {
-      padding: 10px 20px;
-      border-radius: 8px;
-      border:none;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .btn.net {
-      background: #e50914;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FILMBOX</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
       color: #fff;
-    }
-
-    .btn.red:hover {
-      background: #b00710;
-    }
-
-    /* Synopsis */
-    .synopsis {
-      background: #1a1a1a;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 15px;
-    }
-
-    .synopsis h3 {
-      margin: 0 0 8px 0;
-      font-size: 16px;
-      color: #e50914;
-    }
-
-    .synopsis p {
+      font-family: 'Poppins', sans-serif;
       margin: 0;
-      font-size: 14px;
-      line-height: 1.4;
-      color: #ddd;
+      padding: 0;
     }
-
-    /* 🔹 Player setting according to orientation */
-    @media (orientation: landscape) {
-      .header iframe {
-        width: 100%;
-        height: 100vh; /* occupies the entire height of the screen horizontally */
-      }
+    .container { max-width: 900px; margin: auto; padding: 16px; }
+    .video-container {
+      background: #000; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
     }
-
-    @media (orientation: portrait) {
-      .header iframe {
-        width: 100%;
-        height: 200px; /* maintains original size vertically */
-      }
+    iframe { width: 100%; height: 200px; border: none; }
+    .info-box {
+      background: #111; border-radius: 16px; padding: 16px; margin-top: 16px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .poster { width: 100px; border-radius: 10px; box-shadow: 0 0 10px rgba(255,255,255,0.1); flex-shrink: 0; }
+    .details { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; }
+    .details h2 { 
+      margin: 0 0 8px 0; 
+      font-size: 1.2rem; 
+      line-height: 1.3em;
+      text-transform: uppercase;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .icons { display: flex; gap: 16px; margin-top: 4px; color: #ccc; font-size: 0.9rem; flex-wrap: wrap; }
+    .icon-item { display: flex; align-items: center; gap: 6px; }
+    .icon-item svg { width: 18px; height: 18px; fill: #e50914; }
+    .synopsis {
+      background: #111; border-radius: 16px; padding: 16px;
+      margin-top: 16px; line-height: 1.5; font-size: 0.95rem; color: #ccc;
     }
   </style>
 </head>
 <body>
-
-  <!-- 🔺 Top player -->
-  <div class="header">
-    <iframe src="https://hglink.to/p5kq1o8ye6kx" allowfullscreen></iframe>
-  </div>
-
-  <!-- Contents -->
-  <div class="content">
-    <div class="poster">
-      <img src="https://image.tmdb.org/t/p/original/tkdc73JiPVvzngSpbLEIfFNjll1.jpg" alt="Garfield The Movie">
+  <div class="container">
+    <div class="video-container">
+      <iframe src="https://dintezuvio.com/embed/ev7qbwtmygj9" allowfullscreen></iframe>
     </div>
-    <div class="details">
-      <h2>Garfield: The Movie</h2>
-      <p class="goal">2024· 1h 40 min</p>
-      <p class="rating">
-        <!-- Stars SVG -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#ffcc00">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-
-</svg>
-
-7.0
-
-</p>
-<p class="genres">Animation, Comedy</p>
-
-</div>
-
-
-<!-- Single Button -->
-
-<div class="actions">
-
-<button class="btn red">⬇ Download</button>
-
-</div>
-
-<!-- Synopsis -->
-
-<div class="synopsis">
-
-<h3>Synopsis</h3>
-
-<p>
-The world-famous Garfield, the house cat who hates Mondays and loves lasagna, is about to embark on an adventure in the wild outside world!
-
-After an unexpected reunion with his long-lost father, the scruffy cat...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+    <div class="info-box">
+      <img src="https://image.tmdb.org/t/p/original/i5OfOjbZMxNfiFGkdETdbJUOLAq.jpg" alt="Poster" class="poster">
+      <div class="details">
+        <h2>BLACK PHONE 2</h2>
+        <div class="icons">
+          <div class="icon-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 16H5V10h14v10ZM5 8V6h14v2H5Z"/></svg>
+            <span>2025</span>
+          </div>
+          <div class="icon-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0 2a10 10 0 1 1 0-20 10 10 0 0 1 0 20Zm.5-10V7h-1.5v6h5v-1.5Z"/></svg>
+            <span>1h 54 min</span>
+          </div>
+          <div class="icon-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12 17.27 6.18 3.73-1.64-7.03L21 9.24l-7.19-.61L12 2 10.19 8.63 3 9.24l4.46 4.73L5.82 21Z"/></svg>
+            <span>7.2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="synopsis">La película Black Phone 2 (2025) es una secuela ambientada en 1982, cuatro años después de que Finney Blake lograra matar al secuestrador y asesino en serie conocido como "The Grabber". Finney, ahora marcado por el trauma, junto a su hermana menor Gwen, que tiene habilidades psíquicas, comienzan a tener visiones relacionadas con asesinatos ocurridos en un campamento cristiano en las Montañas Rocosas. Decididos a descubrir la verdad, viajan junto con Ernesto, un amigo, al campamento donde trabajó su madre, que también tenía dones psíquicos y fue víctima del asesino.</div>
+  </div>
+</body>
+</html>
