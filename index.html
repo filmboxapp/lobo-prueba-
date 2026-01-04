@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineBlue - Home</title>
+    <title>CineBlue - Carga Dinámica JSON</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -31,16 +31,6 @@
             .movie-poster:hover {
                 transform: translateY(-10px);
                 box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
-            }
-        }
-
-        .hero-gradient {
-            background: linear-gradient(to bottom, rgba(11, 14, 20, 0.2) 0%, rgba(11, 14, 20, 0.8) 70%, rgba(11, 14, 20, 1) 100%);
-        }
-        @media (min-width: 1024px) {
-            .hero-gradient {
-                background: linear-gradient(to right, #0b0e14 10%, rgba(11, 14, 20, 0.7) 40%, rgba(11, 14, 20, 0.1) 100%),
-                            linear-gradient(to top, #0b0e14 5%, transparent 30%);
             }
         }
 
@@ -79,13 +69,13 @@
                 <span>CINE<span class="text-white">BLUE</span></span>
             </div>
             <div id="nav-categories" class="hidden lg:flex gap-8 text-[11px] font-bold text-gray-400 tracking-widest">
-                <!-- Se llena con JS -->
+                <!-- Se llena automáticamente con JS -->
             </div>
         </div>
         
         <div class="flex items-center pr-2"> 
             <div id="search-box" class="search-input-container bg-white/5 rounded-full border border-white/10 overflow-hidden hover:bg-white/10 transition-colors">
-                <input type="text" id="search-input" placeholder="Buscar..." class="bg-transparent border-none outline-none text-[11px] w-full text-white placeholder-gray-500 opacity-0 transition-opacity duration-300 pointer-events-none" onkeyup="handleSearch(event)">
+                <input type="text" id="search-input" placeholder="Buscar películas o series..." class="bg-transparent border-none outline-none text-[11px] w-full text-white placeholder-gray-500 opacity-0 transition-opacity duration-300 pointer-events-none" onkeyup="handleSearch(event)">
                 <button onclick="toggleSearch()" class="search-btn text-gray-400 hover:text-blue-500 transition">
                     <i class="fas fa-search text-sm"></i>
                 </button>
@@ -94,37 +84,12 @@
     </nav>
 
     <!-- Vista Principal -->
-    <div id="home-view" class="view-transition">
-        <!-- Sección Hero -->
-        <section class="relative h-[75vh] md:h-[85vh] w-full flex items-end md:items-center pt-16">
-            <div class="absolute inset-0 z-0">
-                <img id="hero-img" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=2000" class="w-full h-full object-cover object-top" alt="Principal">
-                <div class="absolute inset-0 hero-gradient"></div>
-            </div>
-            <div class="relative z-10 px-8 md:px-20 w-full max-w-4xl mb-12 md:mb-0">
-                <div class="flex items-center gap-3 mb-4">
-                    <span id="hero-badge" class="bg-blue-600 text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded shadow-lg uppercase tracking-widest">Recomendado</span>
-                    <span class="text-yellow-500 text-sm font-bold flex items-center gap-1">
-                        <i class="fas fa-star"></i> <span id="hero-rating">8.9</span>
-                    </span>
-                </div>
-                <h1 id="hero-title" class="text-4xl md:text-7xl font-black mb-4 leading-none uppercase tracking-tighter drop-shadow-2xl">BIENVENIDO</h1>
-                <p id="hero-desc" class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 md:line-clamp-3 max-w-xl font-medium leading-relaxed hidden sm:block">
-                    Explora nuestra colección exclusiva directamente desde el archivo de películas.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button id="hero-play-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-black text-sm flex items-center justify-center gap-3 transition shadow-xl shadow-blue-600/30 uppercase tracking-tighter">
-                        <i class="fas fa-play"></i> Ver Ahora
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Listas de Categorías Dinámicas -->
-        <main id="main-lists" class="relative z-10 -mt-4 md:-mt-8 space-y-12 md:space-y-16 pb-24 px-6 md:px-12"></main>
+    <div id="home-view" class="view-transition pt-24">
+        <!-- Listas de Categorías -->
+        <main id="main-lists" class="relative z-10 space-y-12 md:space-y-16 pb-24 px-6 md:px-12"></main>
     </div>
 
-    <!-- Vista de Cuadrícula (Resultados) -->
+    <!-- Vista de Cuadrícula -->
     <div id="grid-view" class="view-transition hidden pt-28 min-h-screen px-6 md:px-12 pb-20">
         <div class="flex items-center gap-5 mb-10">
             <button onclick="showHome()" class="bg-white/5 hover:bg-blue-600 w-11 h-11 rounded-full flex items-center justify-center transition border border-white/5">
@@ -132,10 +97,15 @@
             </button>
             <div>
                 <h2 id="grid-view-title" class="text-2xl md:text-4xl font-black uppercase tracking-tighter"></h2>
-                <p id="grid-view-subtitle" class="text-blue-500 text-[10px] font-black uppercase tracking-widest mt-1">Explorar resultados</p>
+                <p id="grid-view-subtitle" class="text-blue-500 text-[10px] font-black uppercase tracking-widest mt-1"></p>
             </div>
         </div>
         <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-10"></div>
+        <div id="no-results" class="hidden flex-col items-center justify-center py-24 text-gray-500 text-center">
+            <i class="fas fa-search text-6xl mb-6 opacity-10"></i>
+            <p class="text-xl font-black uppercase tracking-widest opacity-40">Sin resultados</p>
+            <button onclick="showHome()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase">Volver al Inicio</button>
+        </div>
     </div>
 
     <!-- Modal de Película -->
@@ -150,180 +120,226 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-[#11141b] via-transparent to-transparent md:hidden"></div>
             </div>
             <div class="w-full md:w-[62%] p-8 md:p-14 overflow-y-auto">
-                <div id="modal-cat" class="text-blue-500 font-black tracking-[0.3em] text-[9px] mb-3 uppercase">CALIDAD</div>
+                <div id="modal-cat" class="text-blue-500 font-black tracking-[0.3em] text-[9px] mb-3 uppercase">PELÍCULA</div>
                 <h2 id="modal-title" class="text-3xl md:text-5xl font-black mb-5 leading-none uppercase tracking-tighter"></h2>
                 <div class="flex flex-wrap items-center gap-6 mb-8 text-xs md:text-sm">
                     <span class="flex items-center gap-2 text-gray-300 font-bold"><i class="fas fa-calendar-alt text-blue-600"></i> <span id="modal-year">2024</span></span>
                     <span class="flex items-center gap-2 text-yellow-500 font-black"><i class="fas fa-star"></i> <span id="modal-rating">8.5</span></span>
                     <span class="text-gray-500 border border-white/10 px-2 py-0.5 rounded text-[9px] font-bold">4K HDR</span>
                 </div>
-                <p id="modal-desc" class="text-gray-400 leading-relaxed text-sm md:text-lg mb-10 font-medium">Cargando detalles...</p>
+                <p id="modal-desc" class="text-gray-400 leading-relaxed text-sm md:text-lg mb-10 font-medium">
+                    Haz clic en el botón de abajo para reproducir el contenido ahora mismo.
+                </p>
+                
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a id="modal-play-btn" href="#" target="_blank" class="flex-[2] bg-blue-600 hover:bg-blue-700 py-4.5 rounded-2xl font-black text-sm transition uppercase tracking-widest shadow-lg shadow-blue-600/20 text-center flex items-center justify-center">
-                        Ver Ahora
+                    <a id="modal-link" href="#" target="_blank" class="flex-[2] bg-blue-600 hover:bg-blue-700 py-4.5 rounded-2xl font-black text-sm transition uppercase tracking-widest shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> Ver Película
                     </a>
+                    <button class="flex-1 bg-white/5 hover:bg-red-600/20 text-gray-400 hover:text-red-500 py-4.5 rounded-2xl font-black text-[10px] transition uppercase tracking-widest border border-white/10 flex items-center justify-center gap-3">
+                        <i class="fas fa-exclamation-triangle"></i> Reportar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let moviesData = [];
+        let appData = { categories: [] };
+
+        const homeView = document.getElementById('home-view');
+        const gridView = document.getElementById('grid-view');
+        const mainLists = document.getElementById('main-lists');
+        const gridContainer = document.getElementById('grid-container');
+        const noResults = document.getElementById('no-results');
+        const modal = document.getElementById('movie-modal');
+        const searchInput = document.getElementById('search-input');
+        const searchBox = document.getElementById('search-box');
+        const navCategories = document.getElementById('nav-categories');
 
         async function init() {
             try {
-                // Fetch silencioso
-                const res = await fetch('Peliculas.json');
-                if (!res.ok) return;
-                moviesData = await res.json();
+                const response = await fetch('Peliculas.json');
+                const data = await response.json();
                 
-                if (moviesData.length > 0) {
-                    renderHero(moviesData[0]);
-                    renderNav();
-                    renderLists();
+                // Mantenemos la estructura de categorías de tu diseño original
+                // Si el JSON viene como array plano, lo agrupamos como "TODAS LAS PELÍCULAS"
+                // Si el JSON ya viene con categorías (como en tu ejemplo original), se usa directamente
+                if (data.categories) {
+                    appData = data;
+                } else {
+                    appData = {
+                        categories: [
+                            { "name": "EN TENDENCIA", "items": data.slice(0, 10) },
+                            { "name": "ESTRENOS EXCLUSIVOS", "items": data.slice(10, 20) },
+                            { "name": "ACCIÓN PURA", "items": data.slice(20, 30) },
+                            { "name": "TERROR", "items": data.slice(30) }
+                        ]
+                    };
                 }
-            } catch (e) {
-                // Sin errores visuales
+                
+                renderHomeCategories();
+                renderNavCategories();
+            } catch (error) {
+                console.error("Error cargando el JSON:", error);
             }
         }
 
-        function renderHero(movie) {
-            document.getElementById('hero-img').src = movie.poster;
-            document.getElementById('hero-title').innerText = movie.title;
-            document.getElementById('hero-rating').innerText = movie.rating || "8.5";
-            document.getElementById('hero-badge').innerText = movie.quality || "HD";
-            document.getElementById('hero-play-btn').onclick = () => window.open(movie.link, '_blank');
-        }
-
-        function renderNav() {
-            const nav = document.getElementById('nav-categories');
-            nav.innerHTML = `<button onclick="showHome()" class="hover:text-blue-500 transition uppercase">INICIO</button>`;
-            
-            // Agrupar por calidad para el menú (Categoría dinámica)
-            const categories = [...new Set(moviesData.map(m => m.quality).filter(Boolean))];
-            categories.forEach(cat => {
+        function renderNavCategories() {
+            navCategories.innerHTML = `
+                <button onclick="showHome()" class="hover:text-blue-500 transition uppercase">INICIO</button>
+            `;
+            appData.categories.forEach(cat => {
                 const btn = document.createElement('button');
                 btn.className = "hover:text-blue-500 transition uppercase";
-                btn.innerText = cat;
-                btn.onclick = () => filterCategory(cat);
-                nav.appendChild(btn);
+                btn.innerText = cat.name.split(' ')[0];
+                btn.onclick = () => navigateToCategory(cat.name);
+                navCategories.appendChild(btn);
             });
         }
 
-        function renderLists() {
-            const container = document.getElementById('main-lists');
-            container.innerHTML = '';
-            
-            // Agrupamos el JSON para crear las filas del diseño
-            const groups = moviesData.reduce((acc, movie) => {
-                const cat = movie.quality || "OTROS";
-                if (!acc[cat]) acc[cat] = [];
-                acc[cat].push(movie);
-                return acc;
-            }, {});
-
-            Object.keys(groups).forEach(catName => {
+        function renderHomeCategories() {
+            mainLists.innerHTML = '';
+            appData.categories.forEach(cat => {
+                if (!cat.items || cat.items.length === 0) return;
+                
                 const section = document.createElement('section');
                 section.className = "space-y-6";
                 section.innerHTML = `
                     <div class="flex items-center justify-between px-2">
                         <h2 class="text-xl md:text-2xl font-black flex items-center gap-3 uppercase tracking-tighter">
                             <span class="w-1.5 h-7 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></span>
-                            ${catName}
+                            ${cat.name}
                         </h2>
-                        <button onclick="filterCategory('${catName}')" class="text-blue-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition">Ver más</button>
+                        <button onclick="navigateToCategory('${cat.name}')" class="text-blue-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition">Explorar Todo</button>
                     </div>
                     <div class="flex overflow-x-auto gap-6 md:gap-8 pb-8 hide-scrollbar px-2 snap-x">
-                        ${groups[catName].map(m => createCard(m)).join('')}
+                        ${cat.items.map(m => createMovieCard(m, cat.name)).join('')}
                     </div>
                 `;
-                container.appendChild(section);
+                mainLists.appendChild(section);
             });
         }
 
-        function createCard(m) {
-            // Codificar título para el click del modal
-            const id = btoa(unescape(encodeURIComponent(m.title)));
+        function createMovieCard(m, catName) {
+            // Mapeo dinámico: usa 'poster' o 'img' dependiendo de lo que venga en el JSON
+            const posterImg = m.poster || m.img || 'https://via.placeholder.com/300x450';
+            const rating = m.rating || '8.5';
+            const quality = m.quality || 'HD';
+            const year = m.year || '2024';
+            
             return `
-                <div class="movie-poster min-w-[140px] md:min-w-[200px] cursor-pointer group snap-start" onclick="openModal('${id}')">
+                <div class="movie-poster min-w-[140px] md:min-w-[200px] cursor-pointer group snap-start" onclick="openModal('${catName}', '${m.title}')">
                     <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-white/5 bg-slate-900 shadow-xl">
-                        <img src="${m.poster}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                        <div class="absolute top-3 left-3">
-                            <span class="bg-blue-600 text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase">${m.quality}</span>
+                        <img src="${posterImg}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                            <span class="bg-blue-600 text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase">${quality}</span>
+                        </div>
+                        <div class="absolute top-3 right-3 bg-yellow-500 text-black text-[9px] font-black px-2 py-0.5 rounded shadow-lg">
+                            ${rating}
                         </div>
                     </div>
                     <h3 class="mt-4 text-[12px] md:text-[14px] font-black truncate uppercase tracking-tight group-hover:text-blue-500 transition-colors">${m.title}</h3>
+                    <div class="flex items-center justify-between mt-1 opacity-40 text-[9px] font-bold tracking-widest uppercase">
+                        <span>${year}</span>
+                        <span>Film</span>
+                    </div>
                 </div>
             `;
         }
 
-        function openModal(encodedId) {
-            const title = decodeURIComponent(escape(atob(encodedId)));
-            const movie = moviesData.find(m => m.title === title);
-            if (!movie) return;
+        function openModal(catName, movieTitle) {
+            const cat = appData.categories.find(c => c.name === catName);
+            const m = cat.items.find(i => i.title === movieTitle);
+            if (!m) return;
 
-            document.getElementById('modal-img').src = movie.poster;
-            document.getElementById('modal-title').innerText = movie.title;
-            document.getElementById('modal-cat').innerText = movie.quality;
-            document.getElementById('modal-rating').innerText = movie.rating || "8.5";
-            document.getElementById('modal-desc').innerText = `Película disponible en calidad ${movie.quality}. Disfruta del mejor contenido en CineBlue.`;
-            document.getElementById('modal-play-btn').href = movie.link;
-
-            const modal = document.getElementById('movie-modal');
+            document.getElementById('modal-img').src = m.poster || m.img;
+            document.getElementById('modal-title').innerText = m.title;
+            document.getElementById('modal-cat').innerText = catName;
+            document.getElementById('modal-year').innerText = m.year || '2024';
+            document.getElementById('modal-rating').innerText = m.rating || '8.5';
+            document.getElementById('modal-desc').innerText = m.desc || 'Disfruta de este increíble estreno exclusivamente en CineBlue.';
+            document.getElementById('modal-link').href = m.link || '#';
+            
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            document.getElementById('movie-modal').classList.add('hidden');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }
 
-        function filterCategory(cat) {
-            const filtered = moviesData.filter(m => m.quality === cat);
-            document.getElementById('grid-view-title').innerText = cat;
-            document.getElementById('grid-container').innerHTML = filtered.map(m => createCard(m)).join('');
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('grid-view').classList.remove('hidden');
-            window.scrollTo(0,0);
+        function toggleSearch() {
+            searchBox.classList.toggle('active');
+            if (searchBox.classList.contains('active')) {
+                searchInput.classList.remove('opacity-0');
+                searchInput.style.pointerEvents = 'auto';
+                searchInput.focus();
+            } else {
+                searchInput.classList.add('opacity-0');
+                searchInput.style.pointerEvents = 'none';
+                searchInput.value = '';
+            }
+        }
+
+        function handleSearch(event) {
+            const query = event.target.value.toLowerCase().trim();
+            if (query.length > 0) {
+                searchMovies(query);
+            } else if (query.length === 0 && !gridView.classList.contains('hidden')) {
+                showHome();
+            }
+        }
+
+        function searchMovies(query) {
+            let results = [];
+            appData.categories.forEach(cat => {
+                cat.items.forEach(item => {
+                    if (item.title.toLowerCase().includes(query)) {
+                        if (!results.some(r => r.title === item.title)) results.push({...item, catName: cat.name});
+                    }
+                });
+            });
+
+            document.getElementById('grid-view-title').innerText = "Búsqueda";
+            document.getElementById('grid-view-subtitle').innerText = `Resultados para: "${query}"`;
+            homeView.classList.add('hidden');
+            gridView.classList.remove('hidden');
+            
+            if (results.length > 0) {
+                gridContainer.innerHTML = results.map(m => createMovieCard(m, m.catName)).join('');
+                noResults.classList.add('hidden');
+                gridContainer.classList.remove('hidden');
+            } else {
+                gridContainer.classList.add('hidden');
+                noResults.classList.remove('hidden');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function navigateToCategory(catName) {
+            const cat = appData.categories.find(c => c.name === catName);
+            if (!cat) return;
+            document.getElementById('grid-view-title').innerText = catName;
+            document.getElementById('grid-view-subtitle').innerText = "Catálogo completo";
+            gridContainer.innerHTML = cat.items.map(m => createMovieCard(m, catName)).join('');
+            homeView.classList.add('hidden');
+            gridView.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            gridContainer.classList.remove('hidden');
+            window.scrollTo(0, 0);
         }
 
         function showHome() {
-            document.getElementById('grid-view').classList.add('hidden');
-            document.getElementById('home-view').classList.remove('hidden');
-        }
-
-        function handleSearch(e) {
-            const query = e.target.value.toLowerCase().trim();
-            if (query.length > 1) {
-                const results = moviesData.filter(m => m.title.toLowerCase().includes(query));
-                document.getElementById('grid-view-title').innerText = "RESULTADOS";
-                document.getElementById('grid-container').innerHTML = results.map(m => createCard(m)).join('');
-                document.getElementById('home-view').classList.add('hidden');
-                document.getElementById('grid-view').classList.remove('hidden');
-            } else if (query.length === 0) {
-                showHome();
-            }
-        }
-
-        function toggleSearch() {
-            const box = document.getElementById('search-box');
-            const input = document.getElementById('search-input');
-            box.classList.toggle('active');
-            if (box.classList.contains('active')) {
-                input.classList.remove('opacity-0');
-                input.style.pointerEvents = 'auto';
-                input.focus();
-            } else {
-                input.classList.add('opacity-0');
-                input.style.pointerEvents = 'none';
-                input.value = '';
-                showHome();
-            }
+            gridView.classList.add('hidden');
+            homeView.classList.remove('hidden');
+            searchInput.value = '';
+            window.scrollTo(0, 0);
         }
 
         window.onload = init;
     </script>
 </body>
-</html>
+    </html>
