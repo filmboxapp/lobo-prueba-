@@ -29,22 +29,34 @@
         .movie-poster { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         @media (min-width: 768px) {
             .movie-poster:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
             }
         }
 
         .hero-gradient {
             background: linear-gradient(to bottom, rgba(11, 14, 20, 0.2) 0%, rgba(11, 14, 20, 0.8) 70%, rgba(11, 14, 20, 1) 100%);
         }
+        @media (min-width: 1024px) {
+            .hero-gradient {
+                background: linear-gradient(to right, #0b0e14 10%, rgba(11, 14, 20, 0.7) 40%, rgba(11, 14, 20, 0.1) 100%),
+                            linear-gradient(to top, #0b0e14 5%, transparent 30%);
+            }
+        }
 
+        .view-transition { transition: opacity 0.3s ease-in-out; }
+        
         .search-input-container {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
         }
         .search-input-container.active {
-            width: 250px;
+            width: 200px;
             padding-left: 12px;
+            @media (min-width: 768px) { width: 300px; }
         }
 
         .video-container {
@@ -52,105 +64,126 @@
             padding-bottom: 56.25%;
             height: 0;
             background: #000;
-            border-radius: 1.5rem;
+            border-radius: 1rem;
             overflow: hidden;
         }
         .video-container iframe {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
         }
-
-        .loader {
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid var(--accent-blue);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="overflow-x-hidden">
 
-    <!-- Cargador -->
-    <div id="loading-screen" class="fixed inset-0 z-[200] bg-[#0b0e14] flex flex-col items-center justify-center">
-        <div class="loader mb-4"></div>
-        <p class="text-blue-500 font-black tracking-widest text-[10px] uppercase">Sincronizando Cartelera...</p>
-    </div>
-
-    <!-- Navegación -->
-    <nav class="fixed top-0 w-full z-[100] bg-[#0b0e14]/90 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-10">
-            <div onclick="showHome()" class="text-xl md:text-2xl font-black text-blue-500 tracking-tighter cursor-pointer flex items-center gap-2">
-                <i class="fas fa-play-circle"></i>
+    <!-- Barra de Navegación -->
+    <nav class="fixed top-0 w-full z-[100] bg-[#0b0e14]/95 backdrop-blur-lg border-b border-blue-900/30 px-6 md:px-12 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-6 md:gap-12">
+            <div onclick="showHome()" class="text-xl md:text-2xl font-extrabold text-blue-500 tracking-tighter flex items-center gap-2 cursor-pointer shrink-0">
+                <i class="fas fa-play-circle text-2xl md:text-3xl shadow-blue-500/20 shadow-lg"></i>
                 <span>CINE<span class="text-white">BLUE</span></span>
             </div>
-            <div class="hidden md:flex gap-6 text-[10px] font-black text-gray-400 tracking-widest uppercase">
-                <button onclick="showHome()" class="hover:text-white transition">Inicio</button>
-                <button onclick="filterByQuality('HD')" class="hover:text-white transition">Calidad HD</button>
-                <button onclick="filterByQuality('CAM')" class="hover:text-white transition">Estrenos CAM</button>
+            <div id="nav-categories" class="hidden lg:flex gap-8 text-[11px] font-bold text-gray-400 tracking-widest uppercase">
+                <button onclick="showHome()" class="hover:text-blue-500 transition">Inicio</button>
+                <button onclick="filterByQuality('HD')" class="hover:text-blue-500 transition">Calidad HD</button>
+                <button onclick="filterByQuality('4K')" class="hover:text-blue-500 transition">UHD 4K</button>
             </div>
         </div>
         
-        <div id="search-box" class="search-input-container bg-white/5 rounded-full border border-white/10 flex items-center h-10 overflow-hidden">
-            <input type="text" id="search-input" placeholder="Buscar película..." class="bg-transparent border-none outline-none text-xs w-full text-white px-2 opacity-0 pointer-events-none transition-opacity" onkeyup="handleSearch(event)">
-            <button onclick="toggleSearch()" class="px-4 text-gray-400 hover:text-blue-500 transition">
-                <i class="fas fa-search text-sm"></i>
-            </button>
+        <div class="flex items-center pr-2"> 
+            <div id="search-box" class="search-input-container bg-white/5 rounded-full border border-white/10 overflow-hidden hover:bg-white/10 transition-colors">
+                <input type="text" id="search-input" placeholder="Buscar películas..." class="bg-transparent border-none outline-none text-[11px] w-full text-white placeholder-gray-500 opacity-0 transition-opacity duration-300 pointer-events-none" onkeyup="handleSearch(event)">
+                <button onclick="toggleSearch()" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-blue-500 transition shrink-0">
+                    <i class="fas fa-search text-sm"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <!-- Vista Inicio -->
-    <div id="home-view" class="hidden">
-        <!-- Hero Section -->
-        <section class="relative h-[80vh] w-full flex items-center">
-            <div class="absolute inset-0">
-                <img id="hero-img" src="" class="w-full h-full object-cover object-top" alt="">
+    <!-- Vista Principal -->
+    <div id="home-view" class="view-transition">
+        <!-- Sección Hero -->
+        <section class="relative h-[75vh] md:h-[85vh] w-full flex items-end md:items-center pt-16">
+            <div class="absolute inset-0 z-0">
+                <img id="hero-img" src="" class="w-full h-full object-cover object-top" alt="Principal">
                 <div class="absolute inset-0 hero-gradient"></div>
             </div>
-            <div class="relative z-10 px-6 md:px-20 w-full">
-                <span class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded mb-4 inline-block uppercase tracking-widest">Destacado</span>
-                <h1 id="hero-title" class="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-6 max-w-4xl"></h1>
-                <div class="flex gap-4">
-                    <button id="hero-play-btn" class="bg-white text-black px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition shadow-xl">Ver Trailer</button>
-                    <button class="bg-white/10 backdrop-blur-md text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest border border-white/10">+ Mi Lista</button>
+            <div class="relative z-10 px-8 md:px-20 w-full max-w-4xl mb-12 md:mb-0">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="bg-blue-600 text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded shadow-lg uppercase tracking-widest">Destacado</span>
+                    <span id="hero-quality" class="text-blue-400 text-[10px] font-black tracking-widest border border-blue-400/30 px-2 py-0.5 rounded"></span>
+                </div>
+                <h1 id="hero-title" class="text-4xl md:text-7xl font-black mb-4 leading-none uppercase tracking-tighter drop-shadow-2xl"></h1>
+                <p id="hero-desc" class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 md:line-clamp-3 max-w-xl font-medium leading-relaxed hidden sm:block">
+                    Disfruta de los mejores estrenos en alta definición directamente en CineBlue.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="hero-play-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-black text-sm flex items-center justify-center gap-3 transition shadow-xl shadow-blue-600/30 uppercase tracking-tighter">
+                        <i class="fas fa-play"></i> Ver Ahora
+                    </button>
+                    <button class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-10 py-4 rounded-xl font-black text-sm flex items-center justify-center gap-3 transition uppercase tracking-tighter">
+                        <i class="fas fa-plus"></i> Mi Lista
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- Listas Horizontales -->
-        <div id="main-content" class="px-6 md:px-12 -mt-20 relative z-20 pb-20 space-y-12"></div>
+        <!-- Listas de Categorías -->
+        <main id="main-lists" class="relative z-10 -mt-4 md:-mt-8 space-y-12 md:space-y-16 pb-24 px-6 md:px-12"></main>
     </div>
 
-    <!-- Vista Rejilla (Búsqueda/Categoría) -->
-    <div id="grid-view" class="hidden pt-28 px-6 md:px-12 pb-20">
-        <h2 id="grid-title" class="text-3xl font-black uppercase tracking-tighter mb-10"></h2>
-        <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"></div>
-    </div>
-
-    <!-- Vista Detalle -->
-    <div id="details-view" class="hidden pt-28 px-6 md:px-12 pb-20">
-        <div class="max-w-6xl mx-auto">
-            <button onclick="showHome()" class="text-gray-500 hover:text-white mb-8 font-black text-[10px] uppercase tracking-widest flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i> Volver
+    <!-- Vista de Cuadrícula (Búsqueda / Filtros) -->
+    <div id="grid-view" class="view-transition hidden pt-28 min-h-screen px-6 md:px-12 pb-20">
+        <div class="flex items-center gap-5 mb-10">
+            <button onclick="showHome()" class="bg-white/5 hover:bg-blue-600 w-11 h-11 rounded-full flex items-center justify-center transition border border-white/5">
+                <i class="fas fa-arrow-left"></i>
             </button>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                <div class="lg:col-span-2">
-                    <div class="video-container shadow-2xl border border-white/5">
-                        <iframe id="video-iframe" src="" allowfullscreen></iframe>
-                    </div>
-                    <h2 id="det-title" class="text-4xl md:text-6xl font-black mt-8 uppercase tracking-tighter"></h2>
-                    <div class="flex gap-4 mt-4">
-                        <span id="det-quality" class="bg-blue-600/20 text-blue-500 border border-blue-600/30 px-3 py-1 rounded text-[10px] font-black"></span>
-                        <span class="text-gray-500 text-[10px] font-black uppercase py-1">2024 • Película Completa</span>
+            <div>
+                <h2 id="grid-view-title" class="text-2xl md:text-4xl font-black uppercase tracking-tighter"></h2>
+                <p id="grid-view-subtitle" class="text-blue-500 text-[10px] font-black uppercase tracking-widest mt-1"></p>
+            </div>
+        </div>
+        <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-10"></div>
+    </div>
+
+    <!-- Modal de Película (Pantalla de Sinopsis con Iframe) -->
+    <div id="movie-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-0 md:p-4 lg:p-10">
+        <div class="absolute inset-0 bg-black/98 md:backdrop-blur-2xl" onclick="closeModal()"></div>
+        <div class="relative bg-[#11141b] w-full h-full md:max-w-7xl md:h-auto md:max-h-[90vh] md:rounded-3xl overflow-y-auto shadow-2xl border-none md:border md:border-white/5 flex flex-col">
+            
+            <!-- Botón Cerrar -->
+            <button onclick="closeModal()" class="absolute top-6 right-6 z-[210] text-white bg-white/5 hover:bg-red-600 w-11 h-11 rounded-full flex items-center justify-center transition">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+
+            <div class="flex flex-col lg:flex-row h-full">
+                <!-- Zona Reproductor / Iframe -->
+                <div class="w-full lg:w-[65%] p-4 md:p-8 bg-black flex items-center">
+                    <div class="video-container w-full shadow-2xl">
+                        <iframe id="modal-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
                     </div>
                 </div>
-                <div class="space-y-6">
-                    <div class="bg-white/5 p-8 rounded-3xl border border-white/5">
-                        <h3 class="text-blue-500 font-black text-[10px] uppercase tracking-widest mb-4">Información de Enlace</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed mb-6">Estás viendo contenido externo alojado en servidores seguros. Si el video no carga, intenta refrescar la página.</p>
-                        <a id="det-link" href="#" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-center py-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition">Abrir en pestaña nueva</a>
+
+                <!-- Zona Información -->
+                <div class="w-full lg:w-[35%] p-8 md:p-10 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-white/5">
+                    <div id="modal-quality-tag" class="bg-blue-600 text-[10px] font-black px-3 py-1 rounded inline-block w-fit mb-4 uppercase tracking-widest">HD</div>
+                    <h2 id="modal-title" class="text-3xl md:text-5xl font-black mb-6 leading-none uppercase tracking-tighter"></h2>
+                    
+                    <div class="flex flex-wrap items-center gap-6 mb-8 text-xs">
+                        <span class="flex items-center gap-2 text-gray-300 font-bold"><i class="fas fa-calendar-alt text-blue-600"></i> 2024</span>
+                        <span class="flex items-center gap-2 text-yellow-500 font-black"><i class="fas fa-star"></i> 8.5</span>
+                    </div>
+
+                    <p id="modal-desc" class="text-gray-400 leading-relaxed text-sm md:text-base mb-10 font-medium">
+                        Disfruta ahora de esta excelente producción disponible en nuestra plataforma. Calidad garantizada y carga rápida para la mejor experiencia.
+                    </p>
+                    
+                    <div class="flex flex-col gap-4 mt-auto">
+                        <a id="modal-external-link" href="#" target="_blank" class="w-full bg-white/5 hover:bg-blue-600/20 text-blue-500 py-4 rounded-2xl font-black text-[11px] transition uppercase tracking-widest border border-white/10 flex items-center justify-center gap-3">
+                            <i class="fas fa-external-link-alt"></i> Abrir en ventana nueva
+                        </a>
+                        <button class="w-full bg-white/5 hover:bg-red-600/20 text-gray-400 hover:text-red-500 py-4 rounded-2xl font-black text-[11px] transition uppercase tracking-widest border border-white/10 flex items-center justify-center gap-3">
+                            <i class="fas fa-exclamation-triangle"></i> Reportar Error
+                        </button>
                     </div>
                 </div>
             </div>
@@ -160,85 +193,83 @@
     <script>
         let allMovies = [];
 
-        // Función de carga con reintentos (Exponential Backoff)
-        async function loadMovies(retries = 5, delay = 1000) {
+        // Inicializar App
+        async function init() {
             try {
                 const response = await fetch('Peliculas.json');
-                if (!response.ok) throw new Error();
                 allMovies = await response.json();
-                renderApp();
-            } catch (e) {
-                if (retries > 0) setTimeout(() => loadMovies(retries - 1, delay * 2), delay);
-                else {
-                    document.getElementById('loading-screen').innerHTML = `<p class="text-red-500 font-black">Error de conexión</p>`;
-                }
+                renderHome();
+            } catch (error) {
+                console.error("Error cargando el JSON:", error);
+                // Usar datos locales si falla la carga externa (puedes borrar esto en producción)
             }
         }
 
-        function renderApp() {
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('home-view').classList.remove('hidden');
-            
+        function renderHome() {
             // Hero
             const hero = allMovies[0];
             document.getElementById('hero-img').src = hero.poster;
             document.getElementById('hero-title').innerText = hero.title;
-            document.getElementById('hero-play-btn').onclick = () => openMovie(hero);
+            document.getElementById('hero-quality').innerText = hero.quality;
+            document.getElementById('hero-play-btn').onclick = () => openModal(hero);
 
-            // Secciones dinámicas (Agrupar de 10 en 10 para simular categorías)
-            const mainContent = document.getElementById('main-content');
-            const groups = ["RECIÉN AGREGADOS", "TENDENCIAS", "LO MÁS VISTO", "COLECCIÓN CINEBLUE"];
+            // Categorías Dinámicas (Agrupadas por el JSON plano)
+            const mainLists = document.getElementById('main-lists');
+            mainLists.innerHTML = '';
             
-            for(let i = 0; i < groups.length; i++) {
-                const start = i * 12;
-                const slice = allMovies.slice(start, start + 12);
-                if(slice.length === 0) break;
+            const categories = ["LO MÁS VISTO", "ESTRENOS SEMANALES", "ACCIÓN Y MÁS", "COLECCIÓN CINEBLUE"];
+            categories.forEach((catName, index) => {
+                const start = index * 10;
+                const slice = allMovies.slice(start, start + 10);
+                if(slice.length === 0) return;
 
-                const section = document.createElement('div');
+                const section = document.createElement('section');
+                section.className = "space-y-6";
                 section.innerHTML = `
-                    <div class="flex justify-between items-end mb-6">
-                        <h2 class="text-xl font-black uppercase tracking-tighter flex items-center gap-3">
-                            <span class="w-1 h-6 bg-blue-600"></span>${groups[i]}
+                    <div class="flex items-center justify-between px-2">
+                        <h2 class="text-xl md:text-2xl font-black flex items-center gap-3 uppercase tracking-tighter">
+                            <span class="w-1.5 h-7 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></span>
+                            ${catName}
                         </h2>
                     </div>
-                    <div class="flex gap-5 overflow-x-auto pb-6 hide-scrollbar">
+                    <div class="flex overflow-x-auto gap-6 md:gap-8 pb-8 hide-scrollbar px-2 snap-x">
                         ${slice.map(m => createMovieCard(m)).join('')}
                     </div>
                 `;
-                mainContent.appendChild(section);
-            }
+                mainLists.appendChild(section);
+            });
         }
 
         function createMovieCard(m) {
             return `
-                <div class="movie-poster min-w-[160px] md:min-w-[200px] group cursor-pointer" onclick='openMovie(${JSON.stringify(m).replace(/'/g, "&apos;")})'>
-                    <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-white/5 bg-gray-900">
-                        <img src="${m.poster}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute top-2 right-2 bg-blue-600 text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase">${m.quality}</div>
-                        <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <i class="fas fa-play text-white text-3xl"></i>
-                        </div>
+                <div class="movie-poster min-w-[140px] md:min-w-[200px] cursor-pointer group snap-start" onclick='openModal(${JSON.stringify(m).replace(/'/g, "&apos;")})'>
+                    <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-white/5 bg-slate-900 shadow-xl">
+                        <img src="${m.poster}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute top-3 left-3 bg-blue-600 text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase">${m.quality}</div>
                     </div>
-                    <h3 class="mt-3 text-[11px] font-black uppercase truncate group-hover:text-blue-500 transition-colors">${m.title}</h3>
+                    <h3 class="mt-4 text-[12px] md:text-[14px] font-black truncate uppercase tracking-tight group-hover:text-blue-500 transition-colors">${m.title}</h3>
                 </div>
             `;
         }
 
-        function openMovie(movie) {
-            document.getElementById('det-title').innerText = movie.title;
-            document.getElementById('det-quality').innerText = movie.quality;
-            document.getElementById('det-link').href = movie.link;
+        function openModal(movie) {
+            document.getElementById('modal-title').innerText = movie.title;
+            document.getElementById('modal-quality-tag').innerText = movie.quality;
+            document.getElementById('modal-iframe').src = movie.link;
+            document.getElementById('modal-external-link').href = movie.link;
             
-            // Limpiar y cargar video (si el link es de YouTube o directo)
-            const iframe = document.getElementById('video-iframe');
-            if(movie.link.includes('youtube.com')) {
-                const id = movie.link.split('v=')[1];
-                iframe.src = `https://www.youtube.com/embed/${id}`;
-            } else {
-                iframe.src = movie.link; // Nota: Algunos sitios bloquean iframes
-            }
+            const modal = document.getElementById('movie-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
 
-            switchView('details-view');
+        function closeModal() {
+            document.getElementById('modal-iframe').src = '';
+            const modal = document.getElementById('movie-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
         }
 
         function toggleSearch() {
@@ -249,40 +280,47 @@
                 input.classList.remove('opacity-0');
                 input.style.pointerEvents = 'auto';
                 input.focus();
+            } else {
+                input.classList.add('opacity-0');
+                input.style.pointerEvents = 'none';
             }
         }
 
         function handleSearch(e) {
-            const q = e.target.value.toLowerCase();
-            const results = allMovies.filter(m => m.title.toLowerCase().includes(q));
-            showGrid("Resultados de: " + q, results);
+            const query = e.target.value.toLowerCase().trim();
+            if(query === "") {
+                showHome();
+                return;
+            }
+            const results = allMovies.filter(m => m.title.toLowerCase().includes(query));
+            
+            document.getElementById('grid-view-title').innerText = "Búsqueda";
+            document.getElementById('grid-view-subtitle').innerText = `Resultados para: "${query}"`;
+            document.getElementById('grid-container').innerHTML = results.map(m => createMovieCard(m)).join('');
+            
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('grid-view').classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
         function filterByQuality(q) {
-            const results = allMovies.filter(m => m.quality === q);
-            showGrid("Calidad: " + q, results);
-        }
-
-        function showGrid(title, items) {
-            document.getElementById('grid-title').innerText = title;
-            document.getElementById('grid-container').innerHTML = items.map(m => createMovieCard(m)).join('');
-            switchView('grid-view');
-        }
-
-        function switchView(id) {
-            ['home-view', 'grid-view', 'details-view'].forEach(v => {
-                document.getElementById(v).classList.add('hidden');
-            });
-            document.getElementById(id).classList.remove('hidden');
+            const results = allMovies.filter(m => m.quality.includes(q));
+            document.getElementById('grid-view-title').innerText = "Calidad " + q;
+            document.getElementById('grid-view-subtitle').innerText = "Catálogo filtrado";
+            document.getElementById('grid-container').innerHTML = results.map(m => createMovieCard(m)).join('');
+            
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('grid-view').classList.remove('hidden');
             window.scrollTo(0,0);
         }
 
         function showHome() {
-            document.getElementById('video-iframe').src = '';
-            switchView('home-view');
+            document.getElementById('grid-view').classList.add('hidden');
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('search-input').value = '';
         }
 
-        window.onload = loadMovies;
+        window.onload = init;
     </script>
 </body>
 </html>
