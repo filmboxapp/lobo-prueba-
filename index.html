@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineBlue - Cartelera Dinámica</title>
+    <title>CineBlue - Carga Dinámica JSON</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -59,17 +59,31 @@
             @media (min-width: 768px) { width: 300px; }
         }
 
-        .video-container {
+        .search-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Estilo para el contenedor del Iframe dentro del modal */
+        .video-wrapper {
             position: relative;
-            padding-bottom: 56.25%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
             height: 0;
+            overflow: hidden;
             background: #000;
             border-radius: 1rem;
-            overflow: hidden;
         }
-        .video-container iframe {
+        .video-wrapper iframe {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
     </style>
 </head>
@@ -83,16 +97,14 @@
                 <span>CINE<span class="text-white">BLUE</span></span>
             </div>
             <div id="nav-categories" class="hidden lg:flex gap-8 text-[11px] font-bold text-gray-400 tracking-widest uppercase">
-                <button onclick="showHome()" class="hover:text-blue-500 transition">Inicio</button>
-                <button onclick="filterByQuality('HD')" class="hover:text-blue-500 transition">Calidad HD</button>
-                <button onclick="filterByQuality('4K')" class="hover:text-blue-500 transition">UHD 4K</button>
+                <!-- Se llena automáticamente con JS -->
             </div>
         </div>
         
         <div class="flex items-center pr-2"> 
             <div id="search-box" class="search-input-container bg-white/5 rounded-full border border-white/10 overflow-hidden hover:bg-white/10 transition-colors">
-                <input type="text" id="search-input" placeholder="Buscar películas..." class="bg-transparent border-none outline-none text-[11px] w-full text-white placeholder-gray-500 opacity-0 transition-opacity duration-300 pointer-events-none" onkeyup="handleSearch(event)">
-                <button onclick="toggleSearch()" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-blue-500 transition shrink-0">
+                <input type="text" id="search-input" placeholder="Buscar películas o series..." class="bg-transparent border-none outline-none text-[11px] w-full text-white placeholder-gray-500 opacity-0 transition-opacity duration-300 pointer-events-none" onkeyup="handleSearch(event)">
+                <button onclick="toggleSearch()" class="search-btn text-gray-400 hover:text-blue-500 transition">
                     <i class="fas fa-search text-sm"></i>
                 </button>
             </div>
@@ -109,12 +121,14 @@
             </div>
             <div class="relative z-10 px-8 md:px-20 w-full max-w-4xl mb-12 md:mb-0">
                 <div class="flex items-center gap-3 mb-4">
-                    <span class="bg-blue-600 text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded shadow-lg uppercase tracking-widest">Destacado</span>
-                    <span id="hero-quality" class="text-blue-400 text-[10px] font-black tracking-widest border border-blue-400/30 px-2 py-0.5 rounded"></span>
+                    <span class="bg-blue-600 text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded shadow-lg uppercase tracking-widest">Recomendado</span>
+                    <span class="text-yellow-500 text-sm font-bold flex items-center gap-1">
+                        <i class="fas fa-star"></i> <span id="hero-rating">8.5</span>
+                    </span>
                 </div>
-                <h1 id="hero-title" class="text-4xl md:text-7xl font-black mb-4 leading-none uppercase tracking-tighter drop-shadow-2xl"></h1>
+                <h1 id="hero-title" class="text-4xl md:text-7xl font-black mb-4 leading-none uppercase tracking-tighter drop-shadow-2xl">CARGANDO...</h1>
                 <p id="hero-desc" class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 md:line-clamp-3 max-w-xl font-medium leading-relaxed hidden sm:block">
-                    Disfruta de los mejores estrenos en alta definición directamente en CineBlue.
+                    Disfruta del mejor contenido en streaming con la mejor calidad disponible.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <button id="hero-play-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-black text-sm flex items-center justify-center gap-3 transition shadow-xl shadow-blue-600/30 uppercase tracking-tighter">
@@ -131,7 +145,7 @@
         <main id="main-lists" class="relative z-10 -mt-4 md:-mt-8 space-y-12 md:space-y-16 pb-24 px-6 md:px-12"></main>
     </div>
 
-    <!-- Vista de Cuadrícula (Búsqueda / Filtros) -->
+    <!-- Vista de Cuadrícula -->
     <div id="grid-view" class="view-transition hidden pt-28 min-h-screen px-6 md:px-12 pb-20">
         <div class="flex items-center gap-5 mb-10">
             <button onclick="showHome()" class="bg-white/5 hover:bg-blue-600 w-11 h-11 rounded-full flex items-center justify-center transition border border-white/5">
@@ -143,48 +157,51 @@
             </div>
         </div>
         <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-10"></div>
+        <div id="no-results" class="hidden flex-col items-center justify-center py-24 text-gray-500 text-center">
+            <i class="fas fa-search text-6xl mb-6 opacity-10"></i>
+            <p class="text-xl font-black uppercase tracking-widest opacity-40">Sin resultados</p>
+            <button onclick="showHome()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase">Volver al Inicio</button>
+        </div>
     </div>
 
-    <!-- Modal de Película (Pantalla de Sinopsis con Iframe) -->
-    <div id="movie-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-0 md:p-4 lg:p-10">
+    <!-- Modal de Película (Pantalla Sinopsis + Iframe) -->
+    <div id="movie-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-0 md:p-6">
         <div class="absolute inset-0 bg-black/98 md:backdrop-blur-2xl" onclick="closeModal()"></div>
-        <div class="relative bg-[#11141b] w-full h-full md:max-w-7xl md:h-auto md:max-h-[90vh] md:rounded-3xl overflow-y-auto shadow-2xl border-none md:border md:border-white/5 flex flex-col">
+        <div class="relative bg-[#11141b] w-full h-full md:h-auto md:max-w-6xl md:rounded-3xl overflow-hidden shadow-2xl border-none md:border md:border-white/5 flex flex-col lg:flex-row">
             
-            <!-- Botón Cerrar -->
             <button onclick="closeModal()" class="absolute top-6 right-6 z-[210] text-white bg-white/5 hover:bg-red-600 w-11 h-11 rounded-full flex items-center justify-center transition">
                 <i class="fas fa-times text-lg"></i>
             </button>
 
-            <div class="flex flex-col lg:flex-row h-full">
-                <!-- Zona Reproductor / Iframe -->
-                <div class="w-full lg:w-[65%] p-4 md:p-8 bg-black flex items-center">
-                    <div class="video-container w-full shadow-2xl">
-                        <iframe id="modal-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-                    </div>
+            <!-- Izquierda: Reproductor Iframe -->
+            <div class="w-full lg:w-[60%] h-auto p-4 md:p-8 flex items-center bg-black/40">
+                <div class="video-wrapper w-full shadow-2xl">
+                    <iframe id="modal-iframe" src="" allowfullscreen allow="autoplay"></iframe>
+                </div>
+            </div>
+
+            <!-- Derecha: Información -->
+            <div class="w-full lg:w-[40%] p-8 md:p-12 overflow-y-auto max-h-[50vh] lg:max-h-full border-t lg:border-t-0 lg:border-l border-white/5">
+                <div id="modal-cat" class="text-blue-500 font-black tracking-[0.3em] text-[9px] mb-3 uppercase">CALIDAD PREMIUM</div>
+                <h2 id="modal-title" class="text-3xl md:text-5xl font-black mb-5 leading-none uppercase tracking-tighter"></h2>
+                
+                <div class="flex flex-wrap items-center gap-6 mb-8 text-xs">
+                    <span class="flex items-center gap-2 text-gray-300 font-bold"><i class="fas fa-calendar-alt text-blue-600"></i> 2024</span>
+                    <span class="flex items-center gap-2 text-yellow-500 font-black"><i class="fas fa-star"></i> <span id="modal-rating">8.5</span></span>
+                    <span id="modal-quality" class="text-gray-500 border border-white/10 px-2 py-0.5 rounded text-[9px] font-bold">4K HDR</span>
                 </div>
 
-                <!-- Zona Información -->
-                <div class="w-full lg:w-[35%] p-8 md:p-10 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-white/5">
-                    <div id="modal-quality-tag" class="bg-blue-600 text-[10px] font-black px-3 py-1 rounded inline-block w-fit mb-4 uppercase tracking-widest">HD</div>
-                    <h2 id="modal-title" class="text-3xl md:text-5xl font-black mb-6 leading-none uppercase tracking-tighter"></h2>
-                    
-                    <div class="flex flex-wrap items-center gap-6 mb-8 text-xs">
-                        <span class="flex items-center gap-2 text-gray-300 font-bold"><i class="fas fa-calendar-alt text-blue-600"></i> 2024</span>
-                        <span class="flex items-center gap-2 text-yellow-500 font-black"><i class="fas fa-star"></i> 8.5</span>
-                    </div>
-
-                    <p id="modal-desc" class="text-gray-400 leading-relaxed text-sm md:text-base mb-10 font-medium">
-                        Disfruta ahora de esta excelente producción disponible en nuestra plataforma. Calidad garantizada y carga rápida para la mejor experiencia.
-                    </p>
-                    
-                    <div class="flex flex-col gap-4 mt-auto">
-                        <a id="modal-external-link" href="#" target="_blank" class="w-full bg-white/5 hover:bg-blue-600/20 text-blue-500 py-4 rounded-2xl font-black text-[11px] transition uppercase tracking-widest border border-white/10 flex items-center justify-center gap-3">
-                            <i class="fas fa-external-link-alt"></i> Abrir en ventana nueva
-                        </a>
-                        <button class="w-full bg-white/5 hover:bg-red-600/20 text-gray-400 hover:text-red-500 py-4 rounded-2xl font-black text-[11px] transition uppercase tracking-widest border border-white/10 flex items-center justify-center gap-3">
-                            <i class="fas fa-exclamation-triangle"></i> Reportar Error
-                        </button>
-                    </div>
+                <p id="modal-desc" class="text-gray-400 leading-relaxed text-sm md:text-base mb-10 font-medium">
+                    Ya puedes disfrutar de este contenido directamente en CineBlue. La mejor experiencia de streaming sin interrupciones.
+                </p>
+                
+                <div class="flex flex-col gap-4">
+                    <a id="modal-link-btn" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-700 py-4.5 rounded-2xl font-black text-sm transition uppercase tracking-widest shadow-lg shadow-blue-600/20 text-center">
+                        Abrir Externo
+                    </a>
+                    <button class="bg-white/5 hover:bg-red-600/20 text-gray-400 hover:text-red-500 py-4.5 rounded-2xl font-black text-[10px] transition uppercase tracking-widest border border-white/10 flex items-center justify-center gap-3">
+                        <i class="fas fa-exclamation-triangle"></i> Reportar Error
+                    </button>
                 </div>
             </div>
         </div>
@@ -193,50 +210,72 @@
     <script>
         let allMovies = [];
 
-        // Inicializar App
+        // Inicialización
         async function init() {
             try {
                 const response = await fetch('Peliculas.json');
                 allMovies = await response.json();
-                renderHome();
+                
+                renderHero(allMovies[0]);
+                renderNav();
+                renderHomeSections();
             } catch (error) {
                 console.error("Error cargando el JSON:", error);
-                // Usar datos locales si falla la carga externa (puedes borrar esto en producción)
             }
         }
 
-        function renderHome() {
-            // Hero
-            const hero = allMovies[0];
-            document.getElementById('hero-img').src = hero.poster;
-            document.getElementById('hero-title').innerText = hero.title;
-            document.getElementById('hero-quality').innerText = hero.quality;
-            document.getElementById('hero-play-btn').onclick = () => openModal(hero);
+        // Render Hero
+        function renderHero(movie) {
+            if(!movie) return;
+            document.getElementById('hero-img').src = movie.poster;
+            document.getElementById('hero-title').innerText = movie.title;
+            document.getElementById('hero-play-btn').onclick = () => openModal(movie);
+        }
 
-            // Categorías Dinámicas (Agrupadas por el JSON plano)
-            const mainLists = document.getElementById('main-lists');
-            mainLists.innerHTML = '';
+        // Render Nav
+        function renderNav() {
+            const nav = document.getElementById('nav-categories');
+            nav.innerHTML = `<button onclick="showHome()" class="hover:text-blue-500 transition">INICIO</button>`;
             
-            const categories = ["LO MÁS VISTO", "ESTRENOS SEMANALES", "ACCIÓN Y MÁS", "COLECCIÓN CINEBLUE"];
-            categories.forEach((catName, index) => {
-                const start = index * 10;
-                const slice = allMovies.slice(start, start + 10);
-                if(slice.length === 0) return;
+            // Filtros rápidos por calidad en el nav
+            const qualities = ["HD", "4K"];
+            qualities.forEach(q => {
+                const btn = document.createElement('button');
+                btn.className = "hover:text-blue-500 transition";
+                btn.innerText = q;
+                btn.onclick = () => filterByQuality(q);
+                nav.appendChild(btn);
+            });
+        }
 
-                const section = document.createElement('section');
-                section.className = "space-y-6";
-                section.innerHTML = `
+        // Render Secciones Home
+        function renderHomeSections() {
+            const container = document.getElementById('main-lists');
+            container.innerHTML = '';
+
+            // Dividimos el JSON en grupos de 10 para simular categorías en el diseño
+            const sections = [
+                { name: "RECIÉN AGREGADOS", items: allMovies.slice(0, 10) },
+                { name: "TENDENCIAS", items: allMovies.slice(10, 20) },
+                { name: "ACCIÓN Y MÁS", items: allMovies.slice(20, 30) }
+            ];
+
+            sections.forEach(sec => {
+                if(sec.items.length === 0) return;
+                const sectionHtml = document.createElement('section');
+                sectionHtml.className = "space-y-6";
+                sectionHtml.innerHTML = `
                     <div class="flex items-center justify-between px-2">
                         <h2 class="text-xl md:text-2xl font-black flex items-center gap-3 uppercase tracking-tighter">
                             <span class="w-1.5 h-7 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></span>
-                            ${catName}
+                            ${sec.name}
                         </h2>
                     </div>
                     <div class="flex overflow-x-auto gap-6 md:gap-8 pb-8 hide-scrollbar px-2 snap-x">
-                        ${slice.map(m => createMovieCard(m)).join('')}
+                        ${sec.items.map(m => createMovieCard(m)).join('')}
                     </div>
                 `;
-                mainLists.appendChild(section);
+                container.appendChild(sectionHtml);
             });
         }
 
@@ -252,11 +291,51 @@
             `;
         }
 
+        // Lógica de Vistas
+        function showHome() {
+            document.getElementById('grid-view').classList.add('hidden');
+            document.getElementById('home-view').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function filterByQuality(q) {
+            const results = allMovies.filter(m => m.quality.includes(q));
+            renderGridView("Calidad " + q, results);
+        }
+
+        function handleSearch(e) {
+            const query = e.target.value.toLowerCase().trim();
+            if(query === "") { showHome(); return; }
+            const results = allMovies.filter(m => m.title.toLowerCase().includes(query));
+            renderGridView("Búsqueda", results, `Resultados para: "${query}"`);
+        }
+
+        function renderGridView(title, items, subtitle = "Catálogo completo") {
+            document.getElementById('grid-view-title').innerText = title;
+            document.getElementById('grid-view-subtitle').innerText = subtitle;
+            const container = document.getElementById('grid-container');
+            container.innerHTML = items.map(m => createMovieCard(m)).join('');
+            
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('grid-view').classList.remove('hidden');
+            
+            const noRes = document.getElementById('no-results');
+            if(items.length === 0) {
+                noRes.classList.remove('hidden');
+                container.classList.add('hidden');
+            } else {
+                noRes.classList.add('hidden');
+                container.classList.remove('hidden');
+            }
+            window.scrollTo(0,0);
+        }
+
+        // Lógica del Modal (Infame/Iframe)
         function openModal(movie) {
             document.getElementById('modal-title').innerText = movie.title;
-            document.getElementById('modal-quality-tag').innerText = movie.quality;
+            document.getElementById('modal-quality').innerText = movie.quality;
             document.getElementById('modal-iframe').src = movie.link;
-            document.getElementById('modal-external-link').href = movie.link;
+            document.getElementById('modal-link-btn').href = movie.link;
             
             const modal = document.getElementById('movie-modal');
             modal.classList.remove('hidden');
@@ -265,8 +344,8 @@
         }
 
         function closeModal() {
-            document.getElementById('modal-iframe').src = '';
             const modal = document.getElementById('movie-modal');
+            document.getElementById('modal-iframe').src = ''; // Detener video
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
@@ -276,7 +355,7 @@
             const box = document.getElementById('search-box');
             const input = document.getElementById('search-input');
             box.classList.toggle('active');
-            if(box.classList.contains('active')) {
+            if (box.classList.contains('active')) {
                 input.classList.remove('opacity-0');
                 input.style.pointerEvents = 'auto';
                 input.focus();
@@ -284,40 +363,6 @@
                 input.classList.add('opacity-0');
                 input.style.pointerEvents = 'none';
             }
-        }
-
-        function handleSearch(e) {
-            const query = e.target.value.toLowerCase().trim();
-            if(query === "") {
-                showHome();
-                return;
-            }
-            const results = allMovies.filter(m => m.title.toLowerCase().includes(query));
-            
-            document.getElementById('grid-view-title').innerText = "Búsqueda";
-            document.getElementById('grid-view-subtitle').innerText = `Resultados para: "${query}"`;
-            document.getElementById('grid-container').innerHTML = results.map(m => createMovieCard(m)).join('');
-            
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('grid-view').classList.remove('hidden');
-            window.scrollTo(0,0);
-        }
-
-        function filterByQuality(q) {
-            const results = allMovies.filter(m => m.quality.includes(q));
-            document.getElementById('grid-view-title').innerText = "Calidad " + q;
-            document.getElementById('grid-view-subtitle').innerText = "Catálogo filtrado";
-            document.getElementById('grid-container').innerHTML = results.map(m => createMovieCard(m)).join('');
-            
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('grid-view').classList.remove('hidden');
-            window.scrollTo(0,0);
-        }
-
-        function showHome() {
-            document.getElementById('grid-view').classList.add('hidden');
-            document.getElementById('home-view').classList.remove('hidden');
-            document.getElementById('search-input').value = '';
         }
 
         window.onload = init;
