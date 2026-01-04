@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineBlue - Visualizador</title>
+    <title>CineBlue - Cartelera Dinámica</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -29,218 +29,216 @@
         .movie-poster { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         @media (min-width: 768px) {
             .movie-poster:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+                transform: translateY(-8px);
+                box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
             }
         }
 
-        /* Contenedor del buscador corregido */
-        .search-container {
-            width: 42px;
-            height: 42px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .search-container.active {
-            width: 280px;
-        }
-        
-        .search-btn {
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(11, 14, 20, 0.2) 0%, rgba(11, 14, 20, 0.8) 70%, rgba(11, 14, 20, 1) 100%);
         }
 
-        /* Ratio 16:9 para el Iframe */
-        .video-aspect {
+        .search-input-container {
+            transition: all 0.3s ease;
+            width: 40px;
+        }
+        .search-input-container.active {
+            width: 250px;
+            padding-left: 12px;
+        }
+
+        .video-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
+            background: #000;
+            border-radius: 1.5rem;
+            overflow: hidden;
         }
-        .video-aspect iframe {
+        .video-container iframe {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
+            top: 0; left: 0; width: 100%; height: 100%;
         }
-        
-        .view-transition { transition: all 0.4s ease-in-out; }
+
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="overflow-x-hidden">
 
+    <!-- Cargador -->
+    <div id="loading-screen" class="fixed inset-0 z-[200] bg-[#0b0e14] flex flex-col items-center justify-center">
+        <div class="loader mb-4"></div>
+        <p class="text-blue-500 font-black tracking-widest text-[10px] uppercase">Sincronizando Cartelera...</p>
+    </div>
+
     <!-- Navegación -->
-    <nav class="fixed top-0 w-full z-[100] bg-[#0b0e14]/95 backdrop-blur-lg border-b border-blue-900/30 px-6 md:px-12 py-3 flex justify-between items-center">
-        <div class="flex items-center gap-6 md:gap-12">
-            <div onclick="showHome()" class="text-xl md:text-2xl font-extrabold text-blue-500 tracking-tighter flex items-center gap-2 cursor-pointer shrink-0">
-                <i class="fas fa-play-circle text-2xl md:text-3xl"></i>
+    <nav class="fixed top-0 w-full z-[100] bg-[#0b0e14]/90 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-10">
+            <div onclick="showHome()" class="text-xl md:text-2xl font-black text-blue-500 tracking-tighter cursor-pointer flex items-center gap-2">
+                <i class="fas fa-play-circle"></i>
                 <span>CINE<span class="text-white">BLUE</span></span>
             </div>
-            <div id="nav-categories" class="hidden lg:flex gap-8 text-[11px] font-bold text-gray-400 tracking-widest uppercase"></div>
+            <div class="hidden md:flex gap-6 text-[10px] font-black text-gray-400 tracking-widest uppercase">
+                <button onclick="showHome()" class="hover:text-white transition">Inicio</button>
+                <button onclick="filterByQuality('HD')" class="hover:text-white transition">Calidad HD</button>
+                <button onclick="filterByQuality('CAM')" class="hover:text-white transition">Estrenos CAM</button>
+            </div>
         </div>
         
-        <div class="flex items-center"> 
-            <div id="search-box" class="search-container bg-white/5 rounded-full border border-white/10 overflow-hidden flex items-center">
-                <input type="text" id="search-input" placeholder="Buscar contenido..." class="bg-transparent border-none outline-none text-xs w-0 opacity-0 transition-all duration-300 text-white pl-4 flex-grow" onkeyup="handleSearch(event)">
-                <button onclick="toggleSearch()" class="search-btn text-gray-400 hover:text-blue-500 transition">
-                    <i class="fas fa-search text-sm"></i>
-                </button>
-            </div>
+        <div id="search-box" class="search-input-container bg-white/5 rounded-full border border-white/10 flex items-center h-10 overflow-hidden">
+            <input type="text" id="search-input" placeholder="Buscar película..." class="bg-transparent border-none outline-none text-xs w-full text-white px-2 opacity-0 pointer-events-none transition-opacity" onkeyup="handleSearch(event)">
+            <button onclick="toggleSearch()" class="px-4 text-gray-400 hover:text-blue-500 transition">
+                <i class="fas fa-search text-sm"></i>
+            </button>
         </div>
     </nav>
 
-    <!-- VISTA PRINCIPAL (CARTELERA) -->
-    <div id="home-view" class="view-transition pt-24">
-        <main id="main-lists" class="relative z-10 space-y-12 pb-24 px-6 md:px-12"></main>
+    <!-- Vista Inicio -->
+    <div id="home-view" class="hidden">
+        <!-- Hero Section -->
+        <section class="relative h-[80vh] w-full flex items-center">
+            <div class="absolute inset-0">
+                <img id="hero-img" src="" class="w-full h-full object-cover object-top" alt="">
+                <div class="absolute inset-0 hero-gradient"></div>
+            </div>
+            <div class="relative z-10 px-6 md:px-20 w-full">
+                <span class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded mb-4 inline-block uppercase tracking-widest">Destacado</span>
+                <h1 id="hero-title" class="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-6 max-w-4xl"></h1>
+                <div class="flex gap-4">
+                    <button id="hero-play-btn" class="bg-white text-black px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition shadow-xl">Ver Trailer</button>
+                    <button class="bg-white/10 backdrop-blur-md text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest border border-white/10">+ Mi Lista</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Listas Horizontales -->
+        <div id="main-content" class="px-6 md:px-12 -mt-20 relative z-20 pb-20 space-y-12"></div>
     </div>
 
-    <!-- VISTA DE DETALLES Y REPRODUCTOR (NUEVA PANTALLA) -->
-    <div id="details-view" class="view-transition hidden pt-24 min-h-screen px-6 md:px-12 pb-20">
-        <!-- Botón Volver -->
-        <button onclick="showHome()" class="flex items-center gap-2 text-gray-400 hover:text-white transition font-bold text-xs uppercase tracking-widest mb-8">
-            <i class="fas fa-arrow-left"></i> Volver al Inicio
-        </button>
+    <!-- Vista Rejilla (Búsqueda/Categoría) -->
+    <div id="grid-view" class="hidden pt-28 px-6 md:px-12 pb-20">
+        <h2 id="grid-title" class="text-3xl font-black uppercase tracking-tighter mb-10"></h2>
+        <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"></div>
+    </div>
 
+    <!-- Vista Detalle -->
+    <div id="details-view" class="hidden pt-28 px-6 md:px-12 pb-20">
         <div class="max-w-6xl mx-auto">
-            <!-- Título y Categoría -->
-            <div class="mb-8">
-                <span id="det-category" class="text-blue-600 font-black text-[10px] tracking-[0.3em] uppercase">Categoría</span>
-                <h1 id="det-title" class="text-4xl md:text-6xl font-black uppercase tracking-tighter mt-2">Título de la Película</h1>
-                <div class="flex gap-4 mt-4 text-xs font-bold text-gray-400">
-                    <span id="det-year"><i class="fas fa-calendar-alt text-blue-500 mr-2"></i> 2024</span>
-                    <span id="det-rating"><i class="fas fa-star text-yellow-500 mr-2"></i> 8.5</span>
-                    <span id="det-quality" class="bg-blue-600/20 text-blue-500 px-2 rounded">4K ULTRA HD</span>
-                </div>
-            </div>
-
-            <!-- Contenedor del Reproductor -->
-            <div class="bg-black/40 rounded-3xl p-2 md:p-4 border border-white/5 mb-10 shadow-2xl">
-                <div class="video-aspect">
-                    <iframe id="video-iframe" src="" allowfullscreen allow="autoplay"></iframe>
-                </div>
-            </div>
-
-            <!-- Sinopsis y Metadata -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <button onclick="showHome()" class="text-gray-500 hover:text-white mb-8 font-black text-[10px] uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 <div class="lg:col-span-2">
-                    <h3 class="text-xl font-black uppercase tracking-widest mb-4 flex items-center gap-3">
-                        <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span> Sinopsis
-                    </h3>
-                    <p id="det-desc" class="text-gray-400 text-lg leading-relaxed font-medium">
-                        Descripción detallada del contenido...
-                    </p>
-                </div>
-                <div class="space-y-8">
-                    <div class="bg-white/5 rounded-2xl p-6 border border-white/5">
-                        <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Detalles Técnicos</h4>
-                        <ul class="space-y-4 text-sm font-bold">
-                            <li class="flex justify-between"><span class="text-gray-500">Formato:</span> <span>Digital</span></li>
-                            <li class="flex justify-between"><span class="text-gray-500">Idioma:</span> <span>Dual (Lat/Eng)</span></li>
-                            <li class="flex justify-between"><span class="text-gray-500">Subtítulos:</span> <span>Español</span></li>
-                        </ul>
+                    <div class="video-container shadow-2xl border border-white/5">
+                        <iframe id="video-iframe" src="" allowfullscreen></iframe>
                     </div>
-                    <button onclick="reportIssue()" class="w-full bg-red-600/10 hover:bg-red-600/20 text-red-500 border border-red-500/20 py-4 rounded-xl font-black text-xs uppercase tracking-widest transition">
-                        <i class="fas fa-exclamation-triangle mr-2"></i> Reportar enlace caído
-                    </button>
+                    <h2 id="det-title" class="text-4xl md:text-6xl font-black mt-8 uppercase tracking-tighter"></h2>
+                    <div class="flex gap-4 mt-4">
+                        <span id="det-quality" class="bg-blue-600/20 text-blue-500 border border-blue-600/30 px-3 py-1 rounded text-[10px] font-black"></span>
+                        <span class="text-gray-500 text-[10px] font-black uppercase py-1">2024 • Película Completa</span>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-white/5 p-8 rounded-3xl border border-white/5">
+                        <h3 class="text-blue-500 font-black text-[10px] uppercase tracking-widest mb-4">Información de Enlace</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">Estás viendo contenido externo alojado en servidores seguros. Si el video no carga, intenta refrescar la página.</p>
+                        <a id="det-link" href="#" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-center py-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition">Abrir en pestaña nueva</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Vista de Cuadrícula (Búsqueda) -->
-    <div id="grid-view" class="view-transition hidden pt-28 min-h-screen px-6 md:px-12 pb-20">
-        <h2 id="grid-title" class="text-3xl font-black uppercase tracking-tighter mb-10">Resultados</h2>
-        <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8"></div>
-    </div>
-
     <script>
-        let appData = { categories: [] };
+        let allMovies = [];
 
-        async function init() {
+        // Función de carga con reintentos (Exponential Backoff)
+        async function loadMovies(retries = 5, delay = 1000) {
             try {
                 const response = await fetch('Peliculas.json');
-                const data = await response.json();
-                
-                if (data.categories) {
-                    appData = data;
-                } else {
-                    // Si es un array plano, crear estructura por defecto
-                    appData = {
-                        categories: [
-                            { name: "RECIÉN AGREGADOS", items: data }
-                        ]
-                    };
+                if (!response.ok) throw new Error();
+                allMovies = await response.json();
+                renderApp();
+            } catch (e) {
+                if (retries > 0) setTimeout(() => loadMovies(retries - 1, delay * 2), delay);
+                else {
+                    document.getElementById('loading-screen').innerHTML = `<p class="text-red-500 font-black">Error de conexión</p>`;
                 }
-                renderHome();
-                renderNav();
-            } catch (e) { console.error("Error cargando JSON"); }
+            }
         }
 
-        function renderHome() {
-            const main = document.getElementById('main-lists');
-            main.innerHTML = '';
-            appData.categories.forEach(cat => {
-                const section = document.createElement('section');
+        function renderApp() {
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('home-view').classList.remove('hidden');
+            
+            // Hero
+            const hero = allMovies[0];
+            document.getElementById('hero-img').src = hero.poster;
+            document.getElementById('hero-title').innerText = hero.title;
+            document.getElementById('hero-play-btn').onclick = () => openMovie(hero);
+
+            // Secciones dinámicas (Agrupar de 10 en 10 para simular categorías)
+            const mainContent = document.getElementById('main-content');
+            const groups = ["RECIÉN AGREGADOS", "TENDENCIAS", "LO MÁS VISTO", "COLECCIÓN CINEBLUE"];
+            
+            for(let i = 0; i < groups.length; i++) {
+                const start = i * 12;
+                const slice = allMovies.slice(start, start + 12);
+                if(slice.length === 0) break;
+
+                const section = document.createElement('div');
                 section.innerHTML = `
-                    <h2 class="text-xl font-black uppercase tracking-tighter mb-6 flex items-center gap-3">
-                        <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span> ${cat.name}
-                    </h2>
-                    <div class="flex overflow-x-auto gap-6 pb-6 hide-scrollbar px-1 snap-x">
-                        ${cat.items.map(m => createCard(m, cat.name)).join('')}
+                    <div class="flex justify-between items-end mb-6">
+                        <h2 class="text-xl font-black uppercase tracking-tighter flex items-center gap-3">
+                            <span class="w-1 h-6 bg-blue-600"></span>${groups[i]}
+                        </h2>
+                    </div>
+                    <div class="flex gap-5 overflow-x-auto pb-6 hide-scrollbar">
+                        ${slice.map(m => createMovieCard(m)).join('')}
                     </div>
                 `;
-                main.appendChild(section);
-            });
+                mainContent.appendChild(section);
+            }
         }
 
-        function createCard(m, catName) {
-            const poster = m.poster || m.img || '';
+        function createMovieCard(m) {
             return `
-                <div class="movie-poster min-w-[160px] md:min-w-[200px] cursor-pointer group snap-start" 
-                     onclick="openDetails('${catName}', '${m.title.replace(/'/g, "\\'")}')">
-                    <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-white/10 bg-slate-900">
-                        <img src="${poster}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                             <div class="w-full h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px] font-black uppercase">
-                                <i class="fas fa-play mr-2"></i> Ver Detalles
-                             </div>
-                        </div>
-                        <div class="absolute top-2 right-2 bg-yellow-500 text-black text-[9px] font-black px-2 py-0.5 rounded shadow-lg">
-                            ${m.rating || '8.5'}
+                <div class="movie-poster min-w-[160px] md:min-w-[200px] group cursor-pointer" onclick='openMovie(${JSON.stringify(m).replace(/'/g, "&apos;")})'>
+                    <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-white/5 bg-gray-900">
+                        <img src="${m.poster}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute top-2 right-2 bg-blue-600 text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase">${m.quality}</div>
+                        <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i class="fas fa-play text-white text-3xl"></i>
                         </div>
                     </div>
-                    <h3 class="mt-3 text-sm font-bold truncate uppercase tracking-tight group-hover:text-blue-500 transition-colors">${m.title}</h3>
+                    <h3 class="mt-3 text-[11px] font-black uppercase truncate group-hover:text-blue-500 transition-colors">${m.title}</h3>
                 </div>
             `;
         }
 
-        function openDetails(catName, title) {
-            const cat = appData.categories.find(c => c.name === catName);
-            const m = cat.items.find(i => i.title === title);
+        function openMovie(movie) {
+            document.getElementById('det-title').innerText = movie.title;
+            document.getElementById('det-quality').innerText = movie.quality;
+            document.getElementById('det-link').href = movie.link;
             
-            document.getElementById('det-title').innerText = m.title;
-            document.getElementById('det-category').innerText = catName;
-            document.getElementById('det-year').innerText = m.year || '2024';
-            document.getElementById('det-rating').innerText = m.rating || '8.5';
-            document.getElementById('det-desc').innerText = m.desc || 'No hay descripción disponible para este título.';
-            document.getElementById('video-iframe').src = m.link || '';
+            // Limpiar y cargar video (si el link es de YouTube o directo)
+            const iframe = document.getElementById('video-iframe');
+            if(movie.link.includes('youtube.com')) {
+                const id = movie.link.split('v=')[1];
+                iframe.src = `https://www.youtube.com/embed/${id}`;
+            } else {
+                iframe.src = movie.link; // Nota: Algunos sitios bloquean iframes
+            }
 
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('grid-view').classList.add('hidden');
-            document.getElementById('details-view').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-        function showHome() {
-            document.getElementById('video-iframe').src = ''; // Detener video
-            document.getElementById('details-view').classList.add('hidden');
-            document.getElementById('grid-view').classList.add('hidden');
-            document.getElementById('home-view').classList.remove('hidden');
-            window.scrollTo(0, 0);
+            switchView('details-view');
         }
 
         function toggleSearch() {
@@ -248,55 +246,43 @@
             const input = document.getElementById('search-input');
             box.classList.toggle('active');
             if(box.classList.contains('active')) {
-                input.style.width = "100%";
-                input.style.opacity = "1";
+                input.classList.remove('opacity-0');
+                input.style.pointerEvents = 'auto';
                 input.focus();
-            } else {
-                input.style.width = "0";
-                input.style.opacity = "0";
-                input.value = "";
             }
         }
 
         function handleSearch(e) {
             const q = e.target.value.toLowerCase();
-            if(q.length < 2) return;
-            let res = [];
-            appData.categories.forEach(c => c.items.forEach(i => {
-                if(i.title.toLowerCase().includes(q)) res.push({...i, cat: c.name});
-            }));
-            
-            const grid = document.getElementById('grid-container');
-            grid.innerHTML = res.map(m => createCard(m, m.cat)).join('');
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('details-view').classList.add('hidden');
-            document.getElementById('grid-view').classList.remove('hidden');
+            const results = allMovies.filter(m => m.title.toLowerCase().includes(q));
+            showGrid("Resultados de: " + q, results);
         }
 
-        function renderNav() {
-            const nav = document.getElementById('nav-categories');
-            nav.innerHTML = '<button onclick="showHome()" class="hover:text-blue-500 transition">INICIO</button>';
-            appData.categories.forEach(c => {
-                const b = document.createElement('button');
-                b.className = "hover:text-blue-500 transition";
-                b.innerText = c.name.split(' ')[0];
-                b.onclick = () => {
-                    document.getElementById('grid-title').innerText = c.name;
-                    document.getElementById('grid-container').innerHTML = c.items.map(m => createCard(m, c.name)).join('');
-                    document.getElementById('home-view').classList.add('hidden');
-                    document.getElementById('details-view').classList.add('hidden');
-                    document.getElementById('grid-view').classList.remove('hidden');
-                };
-                nav.appendChild(b);
+        function filterByQuality(q) {
+            const results = allMovies.filter(m => m.quality === q);
+            showGrid("Calidad: " + q, results);
+        }
+
+        function showGrid(title, items) {
+            document.getElementById('grid-title').innerText = title;
+            document.getElementById('grid-container').innerHTML = items.map(m => createMovieCard(m)).join('');
+            switchView('grid-view');
+        }
+
+        function switchView(id) {
+            ['home-view', 'grid-view', 'details-view'].forEach(v => {
+                document.getElementById(v).classList.add('hidden');
             });
+            document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
-        function reportIssue() {
-            const t = document.getElementById('det-title').innerText;
-            window.open(`https://wa.me/?text=Error en: ${t}`, '_blank');
+        function showHome() {
+            document.getElementById('video-iframe').src = '';
+            switchView('home-view');
         }
 
-        window.onload = init;
+        window.onload = loadMovies;
     </script>
 </body>
 </html>
