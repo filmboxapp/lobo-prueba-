@@ -68,17 +68,18 @@
             flex-shrink: 0;
         }
 
-        /* Contenedor del Iframe */
-        .video-container {
+        /* Estilos para el Video Iframe */
+        .video-wrapper {
             position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 */
-            background: #000;
-            border-radius: 12px;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
             overflow: hidden;
+            border-radius: 15px;
+            background: #000;
             margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .video-container iframe {
+        .video-wrapper iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -130,7 +131,7 @@
                 <h1 id="hero-title" class="text-4xl md:text-7xl font-black mb-4 leading-none uppercase tracking-tighter drop-shadow-2xl">CARGANDO...</h1>
                 <p id="hero-desc" class="text-gray-300 text-sm md:text-lg mb-8 line-clamp-2 md:line-clamp-3 max-w-xl font-medium leading-relaxed hidden sm:block"></p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <button id="hero-play-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-black text-sm flex items-center justify-center gap-3 transition shadow-xl shadow-blue-600/30 uppercase tracking-tighter">
+                    <button class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-black text-sm flex items-center justify-center gap-3 transition shadow-xl shadow-blue-600/30 uppercase tracking-tighter">
                         <i class="fas fa-play"></i> Ver Ahora
                     </button>
                     <button class="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-10 py-4 rounded-xl font-black text-sm flex items-center justify-center gap-3 transition uppercase tracking-tighter">
@@ -144,7 +145,7 @@
         <main id="main-lists" class="relative z-10 -mt-4 md:-mt-8 space-y-12 md:space-y-16 pb-24 px-6 md:px-12"></main>
     </div>
 
-    <!-- Vista de Cuadrícula (Explorar Más / Buscador) -->
+    <!-- Vista de Cuadrícula -->
     <div id="grid-view" class="view-transition hidden pt-28 min-h-screen px-6 md:px-12 pb-20">
         <div class="flex items-center gap-5 mb-10">
             <button onclick="showHome()" class="bg-white/5 hover:bg-blue-600 w-11 h-11 rounded-full flex items-center justify-center transition border border-white/5">
@@ -163,41 +164,42 @@
         </div>
     </div>
 
-    <!-- Modal de Película (Reestructurado según petición) -->
-    <div id="movie-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-0 md:p-6">
+    <!-- Modal de Película Reestructurado -->
+    <div id="movie-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-0 md:p-6 overflow-y-auto">
         <div class="absolute inset-0 bg-black/98 md:backdrop-blur-2xl" onclick="closeModal()"></div>
-        <div class="relative bg-[#11141b] w-full h-full md:h-auto md:max-w-4xl md:rounded-3xl overflow-hidden shadow-2xl border-none md:border md:border-white/5 flex flex-col p-6 md:p-10 overflow-y-auto">
+        
+        <div class="relative bg-[#11141b] w-full min-h-screen md:min-h-0 md:h-auto md:max-w-4xl md:rounded-3xl shadow-2xl border-none md:border md:border-white/5 flex flex-col p-6 md:p-12">
             
             <button onclick="closeModal()" class="absolute top-6 right-6 z-[210] text-white bg-white/5 hover:bg-red-600 w-11 h-11 rounded-full flex items-center justify-center transition">
                 <i class="fas fa-times text-lg"></i>
             </button>
 
-            <!-- Título y Datos Arriba -->
-            <div class="mb-6">
-                <h2 id="modal-title" class="text-3xl md:text-5xl font-black mb-3 leading-none uppercase tracking-tighter pr-12"></h2>
-                <div class="flex items-center gap-6 text-xs md:text-sm">
+            <!-- Título y Datos (ARRIBA) -->
+            <div class="mb-6 pr-12">
+                <h2 id="modal-title" class="text-3xl md:text-5xl font-black mb-4 leading-none uppercase tracking-tighter"></h2>
+                <div class="flex flex-wrap items-center gap-6 text-xs md:text-sm">
                     <span class="flex items-center gap-2 text-yellow-500 font-black"><i class="fas fa-star"></i> <span id="modal-rating"></span></span>
                     <span class="flex items-center gap-2 text-gray-300 font-bold"><i class="fas fa-calendar-alt text-blue-600"></i> <span id="modal-year"></span></span>
-                    <span id="modal-quality" class="text-gray-500 border border-white/10 px-2 py-0.5 rounded text-[9px] font-bold">4K HDR</span>
+                    <span class="text-gray-500 border border-white/10 px-2 py-0.5 rounded text-[9px] font-bold">4K HDR</span>
                 </div>
             </div>
 
-            <!-- Iframe (Video) -->
-            <div class="video-container shadow-2xl shadow-blue-900/10">
+            <!-- Iframe Video (CENTRO) -->
+            <div class="video-wrapper">
                 <iframe id="modal-iframe" src="" allowfullscreen allow="autoplay"></iframe>
             </div>
 
-            <!-- Sinopsis Hasta Abajo -->
-            <div class="mt-4">
-                <h4 class="text-blue-500 font-black tracking-widest text-[10px] mb-2 uppercase">Sinopsis</h4>
+            <!-- Sinopsis (ABAJO) -->
+            <div class="mt-2">
+                <h4 class="text-blue-500 font-black tracking-[0.2em] text-[10px] mb-2 uppercase">Sinopsis</h4>
                 <p id="modal-desc" class="text-gray-400 leading-relaxed text-sm md:text-lg font-medium"></p>
                 
-                <div class="flex flex-col sm:flex-row gap-4 mt-8">
-                    <button class="flex-1 bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-black text-sm transition uppercase tracking-widest">
-                        Añadir a Mi Lista
+                <div class="flex flex-col sm:flex-row gap-4 mt-8 pb-4">
+                    <button class="flex-1 bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-black text-sm transition uppercase tracking-widest shadow-lg shadow-blue-600/20">
+                        Añadir a mi lista
                     </button>
                     <button class="flex-1 bg-white/5 hover:bg-red-600/20 text-gray-400 hover:text-red-500 py-4 rounded-xl font-black text-[10px] transition uppercase tracking-widest border border-white/10">
-                        <i class="fas fa-exclamation-triangle mr-2"></i> Reportar Video
+                        <i class="fas fa-exclamation-triangle mr-2"></i> Reportar Error
                     </button>
                 </div>
             </div>
@@ -205,8 +207,7 @@
     </div>
 
     <script>
-        let moviesData = [];
-        let categories = {};
+        let appData = { categories: [] };
 
         const homeView = document.getElementById('home-view');
         const gridView = document.getElementById('grid-view');
@@ -221,72 +222,81 @@
         async function init() {
             try {
                 const response = await fetch('Peliculas.json');
-                moviesData = await response.json();
+                const movies = await response.json();
                 
-                // Organizar por categorías automáticamente
-                moviesData.forEach(movie => {
-                    const cat = movie.category || "General";
-                    if (!categories[cat]) categories[cat] = [];
-                    categories[cat].push(movie);
+                // Agrupamos las películas por la categoría que traigan en el JSON
+                // Manteniendo el orden que aparezcan o tus categorías fijas
+                const categoriesMap = {};
+                movies.forEach(movie => {
+                    if (!categoriesMap[movie.category]) {
+                        categoriesMap[movie.category] = [];
+                    }
+                    categoriesMap[movie.category].push(movie);
                 });
 
+                appData.categories = Object.keys(categoriesMap).map(name => ({
+                    name: name,
+                    items: categoriesMap[name]
+                }));
+
                 renderHero();
-                renderNavCategories();
                 renderHomeCategories();
-            } catch (err) {
-                console.error("Error cargando Peliculas.json:", err);
+                renderNavCategories();
+            } catch (error) {
+                console.error("Error cargando Peliculas.json:", error);
             }
         }
 
         function renderHero() {
-            if (moviesData.length === 0) return;
-            const movie = moviesData[0];
-            document.getElementById('hero-img').src = movie.poster;
-            document.getElementById('hero-title').innerText = movie.title;
-            document.getElementById('hero-rating').innerText = movie.rating || "8.5";
-            document.getElementById('hero-desc').innerText = movie.description || "Disfruta del mejor contenido en CineBlue.";
-            document.getElementById('hero-play-btn').onclick = () => openModal(movie);
+            if (appData.categories.length > 0) {
+                const firstMovie = appData.categories[0].items[0];
+                document.getElementById('hero-img').src = firstMovie.img || firstMovie.poster;
+                document.getElementById('hero-title').innerText = firstMovie.title;
+                document.getElementById('hero-rating').innerText = firstMovie.rating || "8.5";
+                document.getElementById('hero-desc').innerText = firstMovie.description || firstMovie.desc;
+            }
         }
 
         function renderNavCategories() {
-            navCategories.innerHTML = `<button onclick="showHome()" class="hover:text-blue-500 transition">INICIO</button>`;
-            Object.keys(categories).forEach(catName => {
+            navCategories.innerHTML = `
+                <button onclick="showHome()" class="hover:text-blue-500 transition uppercase">INICIO</button>
+            `;
+            appData.categories.forEach(cat => {
                 const btn = document.createElement('button');
-                btn.className = "hover:text-blue-500 transition";
-                btn.innerText = catName;
-                btn.onclick = () => navigateToCategory(catName);
+                btn.className = "hover:text-blue-500 transition uppercase";
+                btn.innerText = cat.name.split(' ')[0];
+                btn.onclick = () => navigateToCategory(cat.name);
                 navCategories.appendChild(btn);
             });
         }
 
         function renderHomeCategories() {
             mainLists.innerHTML = '';
-            Object.keys(categories).forEach(catName => {
+            appData.categories.forEach(cat => {
                 const section = document.createElement('section');
                 section.className = "space-y-6";
                 section.innerHTML = `
                     <div class="flex items-center justify-between px-2">
                         <h2 class="text-xl md:text-2xl font-black flex items-center gap-3 uppercase tracking-tighter">
                             <span class="w-1.5 h-7 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"></span>
-                            ${catName}
+                            ${cat.name}
                         </h2>
-                        <button onclick="navigateToCategory('${catName}')" class="text-blue-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition">Explorar Todo</button>
+                        <button onclick="navigateToCategory('${cat.name}')" class="text-blue-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition">Explorar Todo</button>
                     </div>
                     <div class="flex overflow-x-auto gap-6 md:gap-8 pb-8 hide-scrollbar px-2 snap-x">
-                        ${categories[catName].map(m => createMovieCard(m)).join('')}
+                        ${cat.items.map(m => createMovieCard(m, cat.name)).join('')}
                     </div>
                 `;
                 mainLists.appendChild(section);
             });
         }
 
-        function createMovieCard(m) {
-            // Pasamos el objeto stringificado para el onclick
-            const movieString = JSON.stringify(m).replace(/'/g, "&apos;");
+        function createMovieCard(m, catName) {
+            const img = m.img || m.poster;
             return `
-                <div class="movie-poster min-w-[140px] md:min-w-[200px] cursor-pointer group snap-start" onclick='openModal(${movieString})'>
+                <div class="movie-poster min-w-[140px] md:min-w-[200px] cursor-pointer group snap-start" onclick="openModal('${catName}', '${m.title}')">
                     <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-white/5 bg-slate-900 shadow-xl">
-                        <img src="${m.poster}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
                         <div class="absolute top-3 left-3 flex flex-col gap-1.5">
                             <span class="bg-blue-600 text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase">${m.quality || 'HD'}</span>
                         </div>
@@ -319,7 +329,14 @@
         function handleSearch(event) {
             const query = event.target.value.toLowerCase().trim();
             if (query.length > 0) {
-                const results = moviesData.filter(m => m.title.toLowerCase().includes(query));
+                let results = [];
+                appData.categories.forEach(cat => {
+                    cat.items.forEach(item => {
+                        if (item.title.toLowerCase().includes(query)) {
+                            if (!results.some(r => r.title === item.title)) results.push({...item, catName: cat.name});
+                        }
+                    });
+                });
                 renderGridView("Búsqueda", `Resultados para: "${query}"`, results);
             } else {
                 showHome();
@@ -327,17 +344,18 @@
         }
 
         function navigateToCategory(catName) {
-            renderGridView(catName, "Catálogo completo", categories[catName]);
+            const cat = appData.categories.find(c => c.name === catName);
+            if (!cat) return;
+            renderGridView(catName, "Catálogo completo", cat.items);
         }
 
         function renderGridView(title, subtitle, items) {
             document.getElementById('grid-view-title').innerText = title;
             document.getElementById('grid-view-subtitle').innerText = subtitle;
+            gridContainer.innerHTML = items.map(m => createMovieCard(m, m.category || title)).join('');
             homeView.classList.add('hidden');
             gridView.classList.remove('hidden');
-            
             if (items.length > 0) {
-                gridContainer.innerHTML = items.map(m => createMovieCard(m)).join('');
                 noResults.classList.add('hidden');
                 gridContainer.classList.remove('hidden');
             } else {
@@ -354,14 +372,15 @@
             window.scrollTo(0, 0);
         }
 
-        // Función Modal solicitada
-        function openModal(movie) {
-            document.getElementById('modal-title').innerText = movie.title;
-            document.getElementById('modal-rating').innerText = movie.rating || "8.5";
-            document.getElementById('modal-year').innerText = movie.year || "2024";
-            document.getElementById('modal-quality').innerText = movie.quality || "4K HDR";
-            document.getElementById('modal-desc').innerText = movie.description || "Sin descripción disponible.";
-            document.getElementById('modal-iframe').src = movie.link; // Se asume que el link es el de embeber
+        function openModal(catName, movieTitle) {
+            const cat = appData.categories.find(c => c.name === catName);
+            const m = cat.items.find(i => i.title === movieTitle);
+            
+            document.getElementById('modal-title').innerText = m.title;
+            document.getElementById('modal-year').innerText = m.year || "2024";
+            document.getElementById('modal-rating').innerText = m.rating || "8.5";
+            document.getElementById('modal-desc').innerText = m.description || m.desc;
+            document.getElementById('modal-iframe').src = m.link; 
             
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -369,7 +388,7 @@
         }
 
         function closeModal() {
-            document.getElementById('modal-iframe').src = ''; // Limpiar video al cerrar
+            document.getElementById('modal-iframe').src = ''; // Detener video
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
@@ -378,4 +397,4 @@
         window.onload = init;
     </script>
 </body>
-</html>
+    </html>
